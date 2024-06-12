@@ -1,6 +1,5 @@
 plugins {
-	alias libs.plugins.quilt.loom
-	alias libs.plugins.chenille
+	alias libs.plugins.forge.loom
 }
 
 archivesBaseName = project.archives_base_name
@@ -60,41 +59,29 @@ repositories {
 	// mialee misc
 	maven { url "https://maven.willbl.dev/releases" }
 
+	maven {
+		url "https://cursemaven.com"
+	}
 }
 
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
 // See https://docs.gradle.org/current/userguide/platforms.html for information on how version catalogs work.
 dependencies {
 	minecraft libs.minecraft
-	mappings variantOf(libs.quilt.mappings) { classifier "intermediary-v2" }
-	// Replace the above line with the block below if you want to use Mojang mappings as your primary mappings, falling back on QM for parameters and Javadocs
-	/*
-	mappings loom.layered {
-		mappings "org.quiltmc:quilt-mappings:${libs.versions.quilt.mappings.get()}:intermediary-v2"
-		officialMojangMappings()
-	}
-	*/
-	modImplementation libs.quilt.loader
+	forge libs.forge
 
-	// QSL is not a complete API; You will need Quilted Fabric API to fill in the gaps.
-	// Quilted Fabric API will automatically pull in the correct QSL version.
-	modImplementation libs.bundles.quilt.quiltedFabricApi
-	// modImplementation libs.bundles.quilted.fabric.api // If you wish to use Fabric API's deprecated modules, you can replace the above line with this one
+	mappings loom.officialMojangMappings()
 
-	// mod menu
-	modLocalImplementation(libs.modmenu) {
-		transitive = false
-	}
 
 	// midnightlib
 	modImplementation(libs.midnightLib)
 	include(libs.midnightLib)
 
 	// satin
-	modImplementation(libs.satin) {
-		exclude group: 'net.fabricmc'
-	}
-	include(libs.satin)
+//	modImplementation(libs.satin) {
+//		exclude group: 'net.fabricmc'
+//	}
+//	include(libs.satin)
 
 	// lodestone lib
 	modImplementation(libs.lodestoneLib) {
@@ -103,20 +90,10 @@ dependencies {
 	include(libs.lodestoneLib)
 
 	// iris and sodium
-	modLocalImplementation(libs.sodium)
-	modLocalImplementation(libs.iris)
+	modImplementation(libs.sodium)
+	modImplementation(libs.iris)
 	runtimeOnly(libs.jcpp)
 	implementation(libs.glslTransformer)
-}
-
-chenille {
-	javaVersion = 17
-	configurePublishing {
-		mainArtifact = remapJar.archiveFile
-		withLadysnakeMaven()
-		withGithubRelease()
-		withModrinthRelease()
-	}
 }
 
 processResources {

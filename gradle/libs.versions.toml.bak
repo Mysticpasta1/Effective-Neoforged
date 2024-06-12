@@ -6,7 +6,7 @@ forge = "1.20.1-47.2.32"
 
 # Third party dependencies
 # The latest versions should be available at https://ladysnake.org/tools/dependencies
-iris = "5299671"
+iris = "1.6.11+1.20.1"
 lodestoneLib = "5365395"
 midnightLib = "4980331"
 satin = "5299671"
