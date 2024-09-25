@@ -2,47 +2,60 @@ plugins {
 	alias libs.plugins.forge.loom
 }
 
-archivesBaseName = project.archives_base_name
-version = "${project.version}+${libs.versions.minecraft.get()}"
-group = project.maven_group
+version = project.mod_version;
+group = project.maven_group;
 
-loom {
-	accessWidenerPath = file("src/main/resources/effective.accesswidener")
+base {
+	archivesName = project.archives_base_name
 }
 
-repositories {
-	mavenLocal()
-
-	// publishing
-	maven {
-		name = "CurseForge"
-		url = "https://minecraft.curseforge.com/api/maven"
+chenille {
+	configurePublishing {
+		withLadysnakeMaven()
+		withGithubRelease()
+		withModrinthRelease()
 	}
+}
 
-	// cloth config
-	maven { url "https://maven.shedaniel.me/" }
+loom {
+	accessWidenerPath = file("src/client/resources/effective.accesswidener")
 
-	// satin
-	maven {
-		name = 'Ladysnake Mods'
-		url = 'https://maven.ladysnake.org/releases'
-		content {
-			includeGroup 'org.ladysnake'
-			includeGroup 'io.github.ladysnake'
-			includeGroup 'team.lodestar.lodestone'
+	splitEnvironmentSourceSets()
+
+	mods {
+		"effective" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
 		}
 	}
 
-	// mod menu
+}
+
+repositories {
+	// Modrinth
+	maven { url "https://api.modrinth.com/maven" }
+
+	// Veil
+	maven { url "https://maven.blamejared.com/" }
+
+	// Mod Menu
+	maven { url "https://maven.terraformersmc.com/releases/" }
+
+	// CCA
 	maven {
-		name = 'TerraformersMC'
-		url = 'https://maven.terraformersmc.com/'
+		name = 'Ladysnake Mods'
+		url = 'https://maven.ladysnake.org/releases'
 	}
 
+	// Portinglib (for Lodestone Fabric)
+	maven { url "https://mvn.devos.one/snapshots/" 	}
+	maven { url "https://mvn.devos.one/releases/" 	}
+
+	// Reach entity attributes (for Portinglib, I am going to cry)
 	maven {
-		url 'https://jitpack.io'
+		url "https://maven.jamieswhiteshirt.com/libs-release"
 		content {
-			includeGroupByRegex('com\\.github\\..*')
+			includeGroup "com.jamieswhiteshirt"
 		}
 	}
 
@@ -64,8 +77,6 @@ repositories {
 	}
 }
 
-// All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
-// See https://docs.gradle.org/current/userguide/platforms.html for information on how version catalogs work.
 dependencies {
 	minecraft libs.minecraft
 	forge libs.forge
@@ -73,9 +84,23 @@ dependencies {
 	mappings loom.officialMojangMappings()
 
 
+	// Mod Menu
+	modCompileOnly "com.terraformersmc:modmenu:${mod_menu_version}"
+	modRuntimeOnly "com.terraformersmc:modmenu:${mod_menu_version}"
+
+	// CCA
+	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
+	// Adds a dependency on a specific module
+	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-world:${project.cca_version}"
+	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}"
+	// Includes Cardinal Components API as a Jar-in-Jar dependency (optional)
+	include "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
+	include "dev.onyxstudios.cardinal-components-api:cardinal-components-world:${project.cca_version}"
+	include "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}"
+
 	// midnightlib
-	modImplementation(libs.midnightLib)
-	include(libs.midnightLib)
+	modImplementation "maven.modrinth:midnightlib:${project.midnightlib_version}"
+	include "maven.modrinth:midnightlib:${project.midnightlib_version}"
 
 	// satin
 //	modImplementation(libs.satin) {
@@ -83,11 +108,13 @@ dependencies {
 //	}
 //	include(libs.satin)
 
-	// lodestone lib
-	modImplementation(libs.lodestoneLib) {
-		transitive = false
+	// lodestone
+	modImplementation "team.lodestar.lodestone:lodestone:${project.lodestone_version}"
+	include "team.lodestar.lodestone:lodestone:${project.lodestone_version}"
+	for (String module in portinglib_modules.split(",")) {
+		include "io.github.fabricators_of_create.Porting-Lib:$module:${project.portinglib_version}"
+		modImplementation "io.github.fabricators_of_create.Porting-Lib:$module:${project.portinglib_version}"
 	}
-	include(libs.lodestoneLib)
 
 	// iris and sodium
 	modImplementation(libs.sodium)
@@ -106,11 +133,13 @@ processResources {
 
 java {
 	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
-// If you plan to use a different file for the license, don't forget to change the file name here!
 jar {
-	from('LICENSE') {
-		rename { "${it}_${archivesBaseName}" }
+	from("LICENSE") {
+		rename { "${it}_${project.base.archivesName.get()}"}
 	}
 }
