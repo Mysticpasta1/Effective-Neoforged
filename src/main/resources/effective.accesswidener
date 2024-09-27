@@ -1,0 +1,13 @@
+accessWidener	v1	named
+
+accessible class net/minecraft/client/renderer/RenderType$CompositeRenderType
+accessible class net/minecraft/client/renderer/RenderType$CompositeState
+accessible field net/minecraft/client/Minecraft pause Z
+accessible field net/minecraft/world/level/block/entity/ChestBlockEntity chestLidController Lnet/minecraft/world/level/block/entity/ChestLidController;
+accessible field net/minecraft/world/level/block/entity/ChestBlockEntity openersCounter Lnet/minecraft/world/level/block/entity/ContainerOpenersCounter;
+accessible field net/minecraft/world/level/block/entity/EnderChestBlockEntity chestLidController Lnet/minecraft/world/level/block/entity/ChestLidController;
+accessible field net/minecraft/world/level/block/entity/EnderChestBlockEntity openersCounter Lnet/minecraft/world/level/block/entity/ContainerOpenersCounter;
+accessible field net/minecraft/client/sounds/SoundManager soundEngine Lnet/minecraft/client/sounds/SoundEngine;
+accessible field net/minecraft/client/sounds/SoundEngine tickingSounds Ljava/util/List;
+accessible class net/minecraft/client/particle/ParticleEngine$MutableSpriteSet
+accessible field net/minecraft/client/particle/ParticleEngine$MutableSpriteSet sprites Ljava/util/List;
